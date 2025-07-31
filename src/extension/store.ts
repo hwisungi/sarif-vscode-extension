@@ -15,6 +15,7 @@ export class Store {
 
     @observable.shallow logs = [] as Log[]
     @observable resultsFixed = [] as string[] // JSON string of ResultId. TODO: Migrate to set.
+    @observable selectedLocation: { uri: string, region: any } | undefined = undefined
     @computed get results() {
         const runs = this.logs.map(log => log.runs).flat();
         return runs.map(run => run.results ?? []).flat()
