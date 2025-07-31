@@ -15,7 +15,7 @@ All features have been implemented, tested, and verified working correctly.
 - Positioned below the analysis steps list
 
 ### 2. Sortable States Table ✅
-- Created `StatesTableStore` class extending the existing `TableStore` 
+- Created `StatesTableStore` class extending the existing `TableStore`
 - Two columns: "Key" and "Value"
 - Both columns support sorting (ascending/descending)
 - Column headers are clickable with sort indicators
@@ -64,7 +64,7 @@ All features have been implemented, tested, and verified working correctly.
 #### Modified Files:
 1. **`src/panel/details.tsx`**
    - Added `selectedThreadFlowLocation` observable for tracking selection
-   - Added `statesPaneHeight` observable for resize functionality  
+   - Added `statesPaneHeight` observable for resize functionality
    - Added `statesTableStore` computed property
    - Modified render method to include resizable states table
    - Updated Analysis Steps selection handler
@@ -84,7 +84,7 @@ export class StatesTableStore extends TableStore<StateEntry, never> {
         new Column<StateEntry>('Key', 150, state => state.key),
         new Column<StateEntry>('Value', 200, state => state.value),
     ]
-    
+
     // No grouping for states
     constructor(statesSource, selection) {
         super(() => undefined, statesSource, selection);
@@ -94,10 +94,10 @@ export class StatesTableStore extends TableStore<StateEntry, never> {
 
 #### States Pane Layout
 ```tsx
-<div style={{ 
+<div style={{
     position: 'relative',
-    borderTop: '1px solid var(--vscode-panel-border)', 
-    minHeight: '150px', 
+    borderTop: '1px solid var(--vscode-panel-border)',
+    minHeight: '150px',
     height: this.statesPaneHeight.get() + 'px',
     display: 'flex',
     flexDirection: 'column'
@@ -113,16 +113,16 @@ export class StatesTableStore extends TableStore<StateEntry, never> {
 const patterns = [
     // Dot notation with optional backtick
     /([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+(?:\(\))?(?:`\d+[a-z]?)?)/g,
-    
+
     // Arrow notation with optional backtick
     /([a-zA-Z_][a-zA-Z0-9_]*(?:->[a-zA-Z_][a-zA-Z0-9_]*)+(?:`\d+[a-z]?)?)/g,
-    
+
     // Offset expressions with optional backtick
     /(offset\([^)]+\)(?:`\d+[a-z]?)?)/g,
-    
+
     // Curly brace expressions with backtick OR single quote support
     /(\{[^}]+\}(?:[`']\d+[a-z]?)?)/g,
-    
+
     // Simple words with optional backtick
     /(^|[^a-zA-Z0-9_.])([a-zA-Z_][a-zA-Z0-9_]*(?:`\d+[a-z]?)?)($|[^a-zA-Z0-9_.])/g
 ];
@@ -132,7 +132,7 @@ const patterns = [
 ```typescript
 // Core navigation functions
 private getCurrentStepIndex = (): number => {
-    return this.threadFlowLocations.findIndex(tfl => 
+    return this.threadFlowLocations.findIndex(tfl =>
         tfl === this.selectedThreadFlowLocation.get()
     );
 }
@@ -141,7 +141,7 @@ private getVariableValue = (step: ThreadFlowLocation, variable: string): string 
     if (!step.state) return null;
     const value = step.state[variable];
     if (value === undefined) return null;
-    
+
     let processedValue = typeof value === 'object' && value?.text ? value.text : String(value);
     processedValue = processedValue.replace(/\{expr\}/g, `(${variable})`);
     return processedValue;
@@ -172,10 +172,10 @@ interface MenuItemConfig {
 }
 
 // Context menu state
-private contextMenu = observable.box<{ 
-    x: number, 
-    y: number, 
-    variable: string 
+private contextMenu = observable.box<{
+    x: number,
+    y: number,
+    variable: string
 } | null>(null);
 
 // Menu items with dynamic availability

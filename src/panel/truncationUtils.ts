@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 import * as React from 'react';
 
 /**
@@ -27,8 +30,8 @@ export function getConditionalTooltipProps(text: string, isTruncated: boolean): 
  */
 export function createTruncatedSpan(
     text: string, 
-    className: string = '',
-    additionalProps: any = {}
+    className = '',
+    additionalProps: React.HTMLAttributes<HTMLSpanElement> = {}
 ): React.ReactElement {
     let spanRef: HTMLSpanElement | null = null;
     let tooltipApplied = false;
