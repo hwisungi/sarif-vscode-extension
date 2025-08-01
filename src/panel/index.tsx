@@ -83,7 +83,7 @@ export { DetailsLayouts } from './details.layouts';
                                 const {pathname} = new URL(title, 'file:');
                                 return <>
                                     <span>{pathname.file || 'No Location'}</span>
-                                    <span 
+                                    <span
                                         className="ellipsis svSecondary"
                                         ref={(element) => {
                                             if (element && pathname.path) {
@@ -106,7 +106,7 @@ export { DetailsLayouts } from './details.layouts';
                             renderGroup={(rule: ReportingDescriptor | undefined) => {
                                 return <>
                                     <span>{rule?.name ?? '—'}</span>
-                                    <span 
+                                    <span
                                         className="ellipsis svSecondary"
                                         ref={(element) => {
                                             if (element) {
@@ -131,7 +131,7 @@ export { DetailsLayouts } from './details.layouts';
                                 const {pathname} = new URL(log._uri);
                                 return <div key={i} className="svListItem">
                                     <div>{pathname.file}</div>
-                                    <div 
+                                    <div
                                         className="ellipsis svSecondary"
                                         ref={(element) => {
                                             if (element) {

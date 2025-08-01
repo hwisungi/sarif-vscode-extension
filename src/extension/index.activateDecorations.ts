@@ -65,13 +65,13 @@ export function activateDecorations(disposables: Disposable[], store: Store, bas
     async function update() {
         const resultId = activeResultId.get();
         const selectedLoc = store.selectedLocation;
-        
+
         if (!resultId) {
             // This code path is only expected if `activeResultId` has not be set yet. See `activeResultId` comments.
             // Thus we are not concerned with clearing any previously rendered decorations.
             return;
         }
-        
+
         const result = findResult(store.logs, JSON.parse(resultId) as ResultId);
         if (!result) {
             // Only in rare cases does `findResult` fail to resolve a `resultId` into a `result`.
@@ -96,7 +96,7 @@ export function activateDecorations(disposables: Disposable[], store: Store, bas
             const originalDoc = await getOriginalDoc(store.analysisInfo?.commit_sha, currentDoc);
             const diffBlocks = originalDoc ? diffChars(originalDoc.getText(), currentDoc.getText()) : [];
             const ranges = locationsInDoc.map(tfl => driftedRegionToSelection(diffBlocks, currentDoc, tfl.location?.physicalLocation?.region, originalDoc));
-            
+
             // Highlight the selected location if there's a selection and it matches this editor
             if (selectedLoc && currentDoc.uri.toString() === selectedLoc.uri) {
                 // Find the range that matches the selected location

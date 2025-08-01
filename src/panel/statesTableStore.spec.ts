@@ -138,11 +138,11 @@ describe('StatesTableStore', () => {
         // Verify that column toString methods work for tooltips
         const keyColumn = store.columns[0];
         const valueColumn = store.columns[1];
-        
+
         const firstState = states[0];
         assert.strictEqual(keyColumn.toString(firstState), 'very_long_variable_name_that_might_get_truncated', 'Key column toString should return the key');
         assert.strictEqual(valueColumn.toString(firstState), 'this_is_a_very_long_value_that_should_show_in_tooltip', 'Value column toString should return the value');
-        
+
         const secondState = states[1];
         assert.strictEqual(keyColumn.toString(secondState), 'short', 'Key column toString should work for short keys');
         assert.strictEqual(valueColumn.toString(secondState), 'val', 'Value column toString should work for short values');
@@ -152,21 +152,21 @@ describe('StatesTableStore', () => {
         // This test demonstrates that tooltips are now only shown when content is truncated
         // The actual tooltip functionality is tested in the UI through ref callbacks that check
         // if element.scrollWidth > element.clientWidth before adding title attribute
-        
+
         // The conditional tooltip implementation is in:
         // - details.tsx: States table renderCell function uses ref callback to check truncation
         // - resultTable.tsx: createSpanWithConditionalTooltip helper function
         // - index.tsx: Various ellipsis spans use ref callbacks for conditional tooltips
-        
+
         const mockResult = {
             _message: 'This is a very long warning message that might get truncated in the UI',
             _level: 'warning'
         };
-        
+
         // Verify that the message text would be available for conditional tooltip
         assert.strictEqual(mockResult._message, 'This is a very long warning message that might get truncated in the UI');
         assert.strictEqual(mockResult._level, 'warning');
-        
+
         // The conditional tooltip implementation checks element.scrollWidth > element.clientWidth
         // before setting the title attribute, ensuring tooltips only appear for truncated content
     });

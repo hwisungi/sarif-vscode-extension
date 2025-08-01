@@ -47,11 +47,11 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
         if (selectedLocation?.state) {
             Object.entries(selectedLocation.state).forEach(([key, value]) => {
                 let processedValue = typeof value === 'object' && value?.text ? value.text : String(value);
-                
+
                 // Replace {expr} with the current key in parentheses
                 // For example: if key is 'ptr1' and value is '{expr} == ptr2', result is '(ptr1) == ptr2'
                 processedValue = processedValue.replace(/\{expr\}/g, `(${key})`);
-                
+
                 states.push({
                     key,
                     value: processedValue
@@ -72,7 +72,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
             this.selectedTab.set(hasThreadFlows ? 'Analysis Steps' : 'Info');
         });
     }
-    
+
     componentDidMount() {
         // Set the active result for decorations
         if (this.props.result) {
@@ -90,14 +90,14 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
         // Close context menu when clicking outside
         document.addEventListener('click', this.handleDocumentClick);
     }
-    
+
     componentDidUpdate(prevProps: DetailsProps) {
         // Update active result when result prop changes
         if (prevProps.result !== this.props.result && this.props.result) {
             postSetActiveResult(this.props.result);
         }
     }
-    
+
     componentWillUnmount() {
         // Component will unmount
         document.removeEventListener('click', this.handleDocumentClick);
@@ -113,11 +113,11 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
     @action private handleVariableContextMenu = (e: React.MouseEvent, variable: string) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const menuHeight = 4 * 20 + 4; // 4 items * 20px height + 4px padding
         const viewportHeight = window.innerHeight;
         const clickY = e.clientY;
-        
+
         // Check if menu would be clipped at bottom, if so position it above the click
         let adjustedY;
         if (clickY + menuHeight > viewportHeight) {
@@ -127,7 +127,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
             // Normal positioning below click
             adjustedY = clickY;
         }
-        
+
         this.contextMenu.set({
             x: e.clientX,
             y: adjustedY,
@@ -143,7 +143,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
      * Gets the current step index from the selected thread flow location
      */
     private getCurrentStepIndex = (): number => {
-        return this.threadFlowLocations.findIndex(tfl => 
+        return this.threadFlowLocations.findIndex(tfl =>
             tfl === this.selectedThreadFlowLocation.get()
         );
     }
@@ -153,14 +153,14 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
      */
     private getVariableValue = (step: ThreadFlowLocation, variable: string): string | null => {
         if (!step.state) return null;
-        
+
         const value = step.state[variable];
         if (value === undefined) return null;
-        
+
         let processedValue = typeof value === 'object' && value?.text ? value.text : String(value);
         // Apply same processing as in statesTableStore
         processedValue = processedValue.replace(/\{expr\}/g, `(${variable})`);
-        
+
         return processedValue;
     }
 
@@ -184,7 +184,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
             const step = this.threadFlowLocations[i];
             // Skip steps with no variable states
             if (!this.hasValidState(step)) continue;
-            
+
             const stepValue = this.getVariableValue(step, variable);
             if (stepValue !== null) {
                 return i;
@@ -200,21 +200,21 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
     private findPreviouslyChanged = (variable: string): number | null => {
         const currentStepIndex = this.getCurrentStepIndex();
         if (currentStepIndex <= 0) return null;
-        
+
         const currentStep = this.threadFlowLocations[currentStepIndex];
         const currentValue = this.getVariableValue(currentStep, variable);
         if (currentValue === null) return null;
-        
+
         // Search backwards from current step
         for (let i = currentStepIndex - 1; i >= 0; i--) {
             const step = this.threadFlowLocations[i];
             // Skip steps with no variable states
             if (!this.hasValidState(step)) continue;
-            
+
             const stepValue = this.getVariableValue(step, variable);
             // Skip steps where this variable is not present
             if (stepValue === null) continue;
-            
+
             if (stepValue !== currentValue) {
                 return i;
             }
@@ -229,21 +229,21 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
     private findNextChanged = (variable: string): number | null => {
         const currentStepIndex = this.getCurrentStepIndex();
         if (currentStepIndex === -1 || currentStepIndex >= this.threadFlowLocations.length - 1) return null;
-        
+
         const currentStep = this.threadFlowLocations[currentStepIndex];
         const currentValue = this.getVariableValue(currentStep, variable);
         if (currentValue === null) return null;
-        
+
         // Search forwards from current step
         for (let i = currentStepIndex + 1; i < this.threadFlowLocations.length; i++) {
             const step = this.threadFlowLocations[i];
             // Skip steps with no variable states
             if (!this.hasValidState(step)) continue;
-            
+
             const stepValue = this.getVariableValue(step, variable);
             // Skip steps where this variable is not present
             if (stepValue === null) continue;
-            
+
             if (stepValue !== currentValue) {
                 return i;
             }
@@ -257,30 +257,30 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
      */
     private findLastChanged = (variable: string): number | null => {
         if (this.threadFlowLocations.length === 0) return null;
-        
+
         const finalStep = this.threadFlowLocations[this.threadFlowLocations.length - 1];
         // Skip if final step has no variable states
         if (!this.hasValidState(finalStep)) return null;
-        
+
         const finalValue = this.getVariableValue(finalStep, variable);
         if (finalValue === null) return null;
-        
+
         // Search backwards from the end to find the last change
         for (let i = this.threadFlowLocations.length - 2; i >= 0; i--) {
             const step = this.threadFlowLocations[i];
             // Skip steps with no variable states
             if (!this.hasValidState(step)) continue;
-            
+
             const stepValue = this.getVariableValue(step, variable);
             // Skip steps where this variable is not present
             if (stepValue === null) continue;
-            
-            // If this step has a different value than the final value, 
+
+            // If this step has a different value than the final value,
             // then the next step (i+1) is where the last change occurred
             if (stepValue !== finalValue) {
                 const targetStepIndex = i + 1;
                 // Ensure the target step exists and has valid state
-                if (targetStepIndex < this.threadFlowLocations.length && 
+                if (targetStepIndex < this.threadFlowLocations.length &&
                     this.hasValidState(this.threadFlowLocations[targetStepIndex])) {
                     return targetStepIndex;
                 }
@@ -423,30 +423,30 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
             // 1. Dot notation with optional backtick: obj.method, obj.method(), obj.prop.method`123, obj.prop.method`123a
             // This pattern should come FIRST to match longer expressions before simple words
             /([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+(?:\(\))?(?:`\d+[a-z]?)?)/g,
-            
+
             // 2. Arrow notation with optional backtick: ptr->member, ptr->member->prop`123, ptr->member->prop`123a
             /([a-zA-Z_][a-zA-Z0-9_]*(?:->[a-zA-Z_][a-zA-Z0-9_]*)+(?:`\d+[a-z]?)?)/g,
-            
+
             // 3. Offset expressions with optional backtick: offset(expression), offset(var)`123, offset(var)`123a
             /(offset\([^)]+\)(?:`\d+[a-z]?)?)/g,
-            
+
             // 4. Curly brace expressions with optional backtick/quote: {loop iteration}, {loop iteration}`123, {loop iteration}'123, {loop iteration}`123a
             /(\{[^}]+\}(?:[`']\d+[a-z]?)?)/g,
-            
+
             // 5. Simple words with optional backtick - using explicit character boundaries
             // This should come LAST to avoid matching parts of longer expressions
             /(^|[^a-zA-Z0-9_.])([a-zA-Z_][a-zA-Z0-9_]*(?:`\d+[a-z]?)?)($|[^a-zA-Z0-9_.])/g
         ];
-        
+
         const parts: React.ReactNode[] = [];
         const matches: Array<{ match: string, index: number, length: number }> = [];
-        
+
         // Collect all matches from all patterns
         patterns.forEach((pattern, patternIndex) => {
             let match;
             while ((match = pattern.exec(text)) !== null) {
                 let matchText, matchIndex;
-                
+
                 if (patternIndex === 4) {
                     // Last pattern (simple words) has three capture groups: prefix, variable, suffix
                     matchText = match[2]; // The actual variable is in group 2
@@ -456,7 +456,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                     matchText = match[1];
                     matchIndex = match.index;
                 }
-                
+
                 // Only add valid matches (non-empty variable names)
                 if (matchText && matchText.trim()) {
                     matches.push({
@@ -467,21 +467,21 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                 }
             }
         });
-        
+
         // Sort matches by position and remove overlaps
         matches.sort((a, b) => a.index - b.index);
         const uniqueMatches: Array<{ match: string, index: number, length: number }> = [];
-        
+
         for (let i = 0; i < matches.length; i++) {
             const currentMatch = matches[i];
             const lastMatch = uniqueMatches[uniqueMatches.length - 1];
-            
+
             // Skip if this match overlaps with the previous one
             if (!lastMatch || currentMatch.index >= lastMatch.index + lastMatch.length) {
                 uniqueMatches.push(currentMatch);
             }
         }
-        
+
         // Build the result with React elements
         let lastIndex = 0;
         uniqueMatches.forEach((matchInfo, i) => {
@@ -490,7 +490,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                 const beforeText = text.substring(lastIndex, matchInfo.index);
                 parts.push(beforeText);
             }
-            
+
             // Add the variable name with context menu
             const variable = matchInfo.match;
             parts.push(
@@ -513,16 +513,16 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                     {variable}
                 </span>
             );
-            
+
             lastIndex = matchInfo.index + matchInfo.length;
         });
-        
+
         // Add remaining text
         if (lastIndex < text.length) {
             const remainingText = text.substring(lastIndex);
             parts.push(remainingText);
         }
-        
+
         // If variable names were found, return the React fragment with parts
         return uniqueMatches.length > 0 ? <>{parts}</> : text;
     }
@@ -561,7 +561,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                 postRemoveResultFixed(result);
                             }}>Clear</a>.
                         </div>}
-                        <div 
+                        <div
                             className="svDetailsMessage"
                             ref={(element) => {
                                 if (element && result._message) {
@@ -590,9 +590,9 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                                                 {result.locations?.map((loc, i) => {
                                                                     const ploc = loc.physicalLocation;
                                                                     const [uri] = parseArtifactLocation(result, ploc?.artifactLocation);
-                                                                    return <a 
-                                                                        key={i} 
-                                                                        href="#" 
+                                                                    return <a
+                                                                        key={i}
+                                                                        href="#"
                                                                         className="ellipsis"
                                                                         ref={(element) => {
                                                                             if (element && uri) {
@@ -614,7 +614,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                                                     </a>;
                                                                 }) ?? <span>—</span>}
                                                             </span>
-                            <span>Log</span>				<a 
+                            <span>Log</span>				<a
                                                                 href="#"
                                                                 ref={(element) => {
                                                                     if (element) {
@@ -643,7 +643,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                     <span>&nbsp;</span><span></span>{/* Blank separator line */}
                                     {Object.entries(rest).map(([key, value]) => {
                                         return <Fragment key={key}>
-                                            <span 
+                                            <span
                                                 className="ellipsis"
                                                 ref={(element) => {
                                                     if (element && key) {
@@ -683,9 +683,9 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                     </div>
                 </Tab>
                 <Tab name="Analysis Steps" count={this.threadFlowLocations.length}>
-                    <div 
-                        className="svDetailsBody" 
-                        style={{ 
+                    <div
+                        className="svDetailsBody"
+                        style={{
                             height: '100%',
                             overflow: 'hidden',
                             position: 'relative'
@@ -719,7 +719,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                     // Minimal padding, tighter bounds: 80px min, 200px max
                                     return Math.min(Math.max(maxWidth + 6, 80), 200);
                                 };
-                                
+
                                 const locationColumnWidth = calculateMaxLocationWidth();
 
                                 const renderThreadFlowLocation = (threadFlowLocation: ThreadFlowLocation) => {
@@ -728,11 +728,11 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                     const filename = uri?.file ?? '—';
                                     const location = `${region?.startLine}:${region?.startColumn ?? 1}`;
                                     const description = message ?? '—';
-                                    
+
                                     return <>
-                                        <div 
-                                            style={{ 
-                                                marginLeft, 
+                                        <div
+                                            style={{
+                                                marginLeft,
                                                 display: 'grid',
                                                 gridTemplateColumns: `1fr ${locationColumnWidth}px`,
                                                 alignItems: 'center',
@@ -742,9 +742,9 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                                 fontSize: '12px'
                                             }}
                                         >
-                                            <div 
-                                                className="ellipsis" 
-                                                style={{ 
+                                            <div
+                                                className="ellipsis"
+                                                style={{
                                                     minWidth: 0
                                                 }}
                                                 ref={(element) => {
@@ -761,8 +761,8 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                             >
                                                 {description}
                                             </div>
-                                            <div style={{ 
-                                                display: 'flex', 
+                                            <div style={{
+                                                display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '6px',
                                                 justifyContent: 'flex-start'
@@ -843,7 +843,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                         </div>
 
                         {/* States Table Pane */}
-                        <div 
+                        <div
                             style={{
                                 position: 'absolute',
                                 bottom: 0,
@@ -893,7 +893,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                         renderCell={(col, item) => {
                                             const text = col.toString(item);
                                             return (
-                                                <span 
+                                                <span
                                                     ref={(element) => {
                                                         if (element) {
                                                             // Check for truncation after layout
@@ -949,7 +949,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                 const { message, uri, region } = parseLocation(result, location);
                                 const text = `${message ?? ''} ${logicalLocation?.fullyQualifiedName ?? ''}`;
                                 return <>
-                                    <div 
+                                    <div
                                         className="ellipsis"
                                         ref={(element) => {
                                             if (element && text) {
@@ -979,7 +979,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                                 });
                                 if (stack.message?.text) {
                                     return <div key={key} className="svStack">
-                                        <div 
+                                        <div
                                             className="svStacksMessage"
                                             ref={(element) => {
                                                 if (element && stack?.message?.text) {
@@ -1008,7 +1008,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                     </div>
                 </Tab>
             </TabPanel>}
-            
+
             {/* Context Menu - Render using Portal */}
             {this.contextMenu.get() && createPortal(
                 <div
@@ -1033,7 +1033,7 @@ interface DetailsProps { result: Result, resultsFixed: string[], height: IObserv
                     {(() => {
                         const variable = this.contextMenu.get()!.variable;
                         const menuItems = this.getMenuItemConfig(variable);
-                        
+
                         return menuItems.map(item => this.renderContextMenuItem(item));
                     })()}
                 </div>,

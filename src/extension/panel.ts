@@ -133,15 +133,15 @@ export class Panel {
                     const versionControlProvenance = log.runs[runIndex].versionControlProvenance;
                     const validatedUri = await basing.translateArtifactToLocal(uri, uriBase, versionControlProvenance);
                     if (!validatedUri) return;
-                    
+
                     // Store the selected location for decorations
                     store.selectedLocation = { uri: validatedUri.toString(), region };
-                    
+
                     // Set the active result ID for decorations
                     if (this.decorations) {
                         this.decorations.setActiveResultId(JSON.stringify(message.id));
                     }
-                    
+
                     await this.selectLocal(logUri, validatedUri, region);
                     break;
                 }

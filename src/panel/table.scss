@@ -41,7 +41,7 @@
             padding: 1px 4px; // Minimal padding
             display: flex;
             align-items: center;
-            &:hover { 
+            &:hover {
                 background-color: var(--vscode-list-hoverBackground);
                 z-index: 11; // Ensure hover is above other cells
             }

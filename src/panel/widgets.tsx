@@ -96,9 +96,9 @@ export interface ListProps<T> {
                             requestAnimationFrame(() => ele.scrollIntoView({ behavior: 'smooth', block: 'nearest' }));
                         }}
                         className={css('svListItem', isSelected && 'svItemSelected')}
-                        onClick={e => { 
-                            e.stopPropagation(); 
-                            selection.set(item); 
+                        onClick={e => {
+                            e.stopPropagation();
+                            selection.set(item);
                         }}>
                         {renderItem(item, i)}
                     </div>;

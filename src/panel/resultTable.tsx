@@ -28,7 +28,7 @@ interface ResultTableProps<G> {
     private createSpanWithConditionalTooltip = (text: string, children?: React.ReactNode) => {
         const content = children ?? text;
         return (
-            <span 
+            <span
                 ref={(element) => {
                     if (element && text) {
                         // Check for truncation after layout

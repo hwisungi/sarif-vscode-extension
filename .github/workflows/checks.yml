@@ -10,7 +10,7 @@ on:
 permissions:
   security-events: write # for sending sarif to code scanning
   contents: write # for accessing the cache
-  
+
 
 jobs:
   eslint:

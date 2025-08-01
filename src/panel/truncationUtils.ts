@@ -29,7 +29,7 @@ export function getConditionalTooltipProps(text: string, isTruncated: boolean): 
  * based on text truncation. This is designed to work with existing render patterns.
  */
 export function createTruncatedSpan(
-    text: string, 
+    text: string,
     className = '',
     additionalProps: React.HTMLAttributes<HTMLSpanElement> = {}
 ): React.ReactElement {

@@ -44,7 +44,7 @@
             opacity: 0;
         }
 
-        &.svChecked { 
+        &.svChecked {
             .codicon { opacity: 1; }
         }
     }
@@ -75,15 +75,15 @@
         cursor: pointer;
         padding: 2px 6px; // Further reduced from 4px 8px
         border: 1px solid transparent;
-        
+
         .svIconBackground {
             margin-right: 4px; // Reduced from 8px
         }
-        
+
         &:hover {
             background-color: var(--vscode-list-hoverBackground);
         }
-        
+
         &.svItemSelected {
             background-color: var(--vscode-list-activeSelectionBackground);
             color: var(--vscode-list-activeSelectionForeground);
@@ -128,7 +128,7 @@
         cursor: pointer;
         padding: 1px 6px 0px; // Further reduced from 2px 8px 1px
         margin: 0; // Ensure no margin
-        
+
         & > div {
             display: flex;
             align-items: center;
@@ -148,7 +148,7 @@
             color: var(--vscode-panelTitle-activeForeground);
             border-bottom-color: var(--vscode-panelTitle-activeForeground);
         }
-        
+
         &:hover {
             background-color: var(--vscode-list-hoverBackground);
         }
